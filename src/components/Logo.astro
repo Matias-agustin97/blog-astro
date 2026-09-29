@@ -1,0 +1,18 @@
+---
+import { SITE_TITLE } from '../consts';
+---
+
+<a href="/" class="logo" aria-label={`${SITE_TITLE} — inicio`}>
+  <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+    <defs>
+      <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#8b5cf6"></stop>
+        <stop offset="1" stop-color="#22d3ee"></stop>
+      </linearGradient>
+    </defs>
+    <rect width="64" height="64" rx="16" fill="#12121c"></rect>
+    <path d="M14 42 L30 16 L36 26 L50 20 L40 34 L46 48 L32 40 Z" fill="url(#logo-g)"></path>
+    <circle cx="33" cy="24" r="2.2" fill="#12121c"></circle>
+  </svg>
+  <span>{SITE_TITLE}</span>
+</a>

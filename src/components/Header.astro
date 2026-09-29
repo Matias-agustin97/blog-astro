@@ -1,0 +1,47 @@
+---
+import Logo from './Logo.astro';
+import { NAV_LINKS } from '../consts';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header class="navbar" data-navbar>
+  <div class="container navbar__inner">
+    <Logo />
+
+    <nav class="navbar__links" id="nav-links" aria-label="Principal">
+      {
+        NAV_LINKS.map((link) => (
+          <a href={link.href} class:list={{ active: isActive(link.href) }} aria-current={isActive(link.href) ? 'page' : undefined}>
+            {link.label}
+          </a>
+        ))
+      }
+      <a href="/rss.xml" class="btn btn--primary btn--sm navbar__cta">Suscribirme</a>
+    </nav>
+
+    <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-links">
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<script>
+  const navbar = document.querySelector<HTMLElement>('[data-navbar]');
+  const toggle = navbar?.querySelector<HTMLButtonElement>('.navbar__toggle');
+  const links = navbar?.querySelector<HTMLElement>('.navbar__links');
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    toggle.setAttribute('aria-label', open ? 'Abrir menú' : 'Cerrar menú');
+    toggle.classList.toggle('is-open', !open);
+    links?.classList.toggle('is-open', !open);
+  });
+
+  const onScroll = () => navbar?.classList.toggle('navbar--scrolled', window.scrollY > 20);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>

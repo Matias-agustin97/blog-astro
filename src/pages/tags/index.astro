@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPublishedPosts, getTagCounts, tagSlug } from '../../utils/posts';
+
+const tags = getTagCounts(await getPublishedPosts());
+---
+
+<BaseLayout title="Etiquetas" description="Explorá los posts por tema.">
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Etiquetas</span>
+      <h1>Explorá por <span class="gradient-text">tema</span></h1>
+      <p>{tags.length} etiquetas para encontrar lo que buscás.</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container container--narrow">
+      <ul class="tag-cloud">
+        {
+          tags.map(([tag, count]) => (
+            <li>
+              <a href={`/tags/${tagSlug(tag)}`} class="card tag-cloud__item">
+                <span>#{tag}</span>
+                <small>
+                  {count} {count === 1 ? 'post' : 'posts'}
+                </small>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

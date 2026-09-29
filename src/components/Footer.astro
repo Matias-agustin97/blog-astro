@@ -1,0 +1,25 @@
+---
+import Logo from './Logo.astro';
+import { AUTHOR, SITE_DESCRIPTION, SOCIAL_LINKS } from '../consts';
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <Logo />
+      <p>{SITE_DESCRIPTION}</p>
+    </div>
+    <div class="footer__social">
+      {
+        SOCIAL_LINKS.map((s) => (
+          <a href={s.href} aria-label={s.label} title={s.label}>
+            {s.short}
+          </a>
+        ))
+      }
+    </div>
+  </div>
+  <div class="container footer__bottom">
+    <span>© {new Date().getFullYear()} {AUTHOR}. Hecho con Astro.</span>
+  </div>
+</footer>

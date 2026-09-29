@@ -1,0 +1,98 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { AUTHOR } from '../../consts';
+import { formatDate, getPublishedPosts, readingTime, tagSlug, type Post } from '../../utils/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+interface Props {
+  post: Post;
+  newer?: Post;
+  older?: Post;
+}
+
+const { post, newer, older } = Astro.props;
+const { title, description, pubDate, updatedDate, tags } = post.data;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+---
+
+<BaseLayout title={title} description={description} type="article">
+  <article class="post">
+    <header class="post__header container container--narrow">
+      <a href="/blog" class="link-arrow">← Volver al blog</a>
+      <h1>{title}</h1>
+      <p class="post__description">{description}</p>
+      <div class="post-meta">
+        <span>{AUTHOR}</span>
+        <span aria-hidden="true">·</span>
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime(post.body)} min de lectura</span>
+      </div>
+      {updatedDate && <p class="post__updated">Actualizado el {formatDate(updatedDate)}</p>}
+      {
+        tags.length > 0 && (
+          <ul class="tag-list">
+            {tags.map((tag) => (
+              <li>
+                <a href={`/tags/${tagSlug(tag)}`} class="tag">
+                  #{tag}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+
+    <div class="container post__layout">
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        toc.length > 1 && (
+          <aside class="toc" aria-label="Contenido del post">
+            <span class="toc__title">En este post</span>
+            <ul>
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )
+      }
+    </div>
+
+    <nav class="container container--narrow post-nav" aria-label="Otros posts">
+      {
+        older ? (
+          <a href={`/blog/${older.id}`} class="post-nav__link">
+            <small>← Anterior</small>
+            <span>{older.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        newer && (
+          <a href={`/blog/${newer.id}`} class="post-nav__link post-nav__link--next">
+            <small>Siguiente →</small>
+            <span>{newer.data.title}</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</BaseLayout>

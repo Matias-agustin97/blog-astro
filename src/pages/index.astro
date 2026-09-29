@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { AUTHOR, AUTHOR_ROLE } from '../consts';
+import { getPublishedPosts, getTagCounts, tagSlug } from '../utils/posts';
+
+const posts = await getPublishedPosts();
+const [latest, ...rest] = posts;
+const tags = getTagCounts(posts).slice(0, 8);
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div class="container">
+      <span class="pill"><span class="pill__dot"></span> Nuevo post cada semana</span>
+      <h1>
+        Hola, soy {AUTHOR}.<br />
+        Escribo sobre <span class="gradient-text">código, diseño y aprendizaje.</span>
+      </h1>
+      <p class="lead">
+        {AUTHOR_ROLE}. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Acá comparto lo que aprendo, los
+        proyectos en los que trabajo y algunas ideas sueltas.
+      </p>
+      <div class="hero__actions">
+        <a href="/blog" class="btn btn--primary">Leer el blog</a>
+        <a href="/sobre-mi" class="btn btn--ghost">Sobre mí</a>
+      </div>
+    </div>
+  </section>
+
+  {
+    latest && (
+      <section class="section section--tight">
+        <div class="container">
+          <span class="eyebrow">Último post</span>
+          <PostCard post={latest} featured />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section">
+    <div class="container home-grid">
+      <div>
+        <div class="section-row">
+          <h2>Posts recientes</h2>
+          <a href="/blog" class="link-arrow">Ver todos →</a>
+        </div>
+        <div class="post-list">
+          {rest.slice(0, 5).map((post) => <PostCard post={post} />)}
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="card">
+          <h3>Etiquetas</h3>
+          <ul class="tag-list">
+            {
+              tags.map(([tag, count]) => (
+                <li>
+                  <a href={`/tags/${tagSlug(tag)}`} class="tag">
+                    #{tag} <small>{count}</small>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="card card--gradient">
+          <h3>Suscribite</h3>
+          <p>Recibí los posts nuevos en tu lector de RSS favorito.</p>
+          <a href="/rss.xml" class="btn btn--light btn--sm">Feed RSS</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>
